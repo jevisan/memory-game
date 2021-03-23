@@ -11,7 +11,7 @@ export class MemoryGame extends LitElement {
         --bleu: #2880de;
         --bg-color-1: #EDC7B7;
         --bg-color-2: #EEE2DC;
-        --bg-color3: #BAB2B5;
+        --bg-color-3: #BAB2B5;
       }
       #board {
         background: var(--bg-color-1);
@@ -25,6 +25,7 @@ export class MemoryGame extends LitElement {
       #score-board {
         display: flex;
         justify-content: space-around;
+        margin-bottom: 40px;
       }
       .cards-wrapper {
         display: grid;
@@ -95,37 +96,38 @@ export class MemoryGame extends LitElement {
     if (this.revealedCard1 === null) {
       this.revealedCard1 = e.target;
       this.revealedCard1.setState('show');
-      console.log(`Tomada: ${this.revealedCard1.symbol}`);
     } else if (this.revealedCard2 === null && e.target != this.revealedCard1) {
       this.revealedCard2 = e.target;
       this.revealedCard2.setState('show');
-      console.log(`Tomadas: ${this.revealedCard1.symbol} & ${this.revealedCard2.symbol}`);
-      // se entiende que en este punto ya se tomaron ambas cartas
-      // ------------------------------------------
-      // son iguales
-      if (this.revealedCard1.symbol === this.revealedCard2.symbol) {
-        this.currentPlayer.score ++;
-        this.getCurrentPlayerCard().setScore(this.currentPlayer.score);
-        console.log(this.currentPlayer);
-        this.revealedCard1.setState('taken');
-        this.revealedCard2.setState('taken');
-      // no son iguales
-      } else {
-        this.revealedCard1.setState('hidden');
-        this.revealedCard2.setState('hidden');
-        this.passTurn();
-      }
-      this.revealedCard1 = null;
-      this.revealedCard2 = null;
+      setTimeout(() => {
+        if (this.revealedCard1.symbol === this.revealedCard2.symbol) {
+          this.currentPlayer.score ++;
+          this.getCurrentPlayerCard().setScore(this.currentPlayer.score);
+          console.log(this.currentPlayer);
+          this.revealedCard1.setState('taken');
+          this.revealedCard2.setState('taken');
+        } else {
+          this.revealedCard1.setState('hidden');
+          this.revealedCard2.setState('hidden');
+          this.passTurn();
+        }
+        this.revealedCard1 = null;
+        this.revealedCard2 = null;
+      }, 2000);
     }
   }
 
   getCurrentPlayerCard() {
-    if (this.currentPlayer == this.player1) {
+    if (this.currentPlayer === this.player1) {
       return this.shadowRoot.getElementById('player1');
     } else {
       return this.shadowRoot.getElementById('player2');
     }
+  }
+
+  toggleActivePlayer() {
+    this.shadowRoot.getElementById('player1').toogleActive();
+    this.shadowRoot.getElementById('player2').toogleActive();
   }
 
   passTurn() {
@@ -140,8 +142,8 @@ export class MemoryGame extends LitElement {
     return html`
       <div id="board">
         <div id="score-board">
-          <player-score-card id="player1" .playerName="${this.player1.name}" .score='${this.player1.score}'></player-score-card>
-          <player-score-card id="player2" .playerName="${this.player2.name}" .score='${this.player2.score}'></player-score-card>
+          <player-score-card id="player1" .playerName="${this.player1.name}" .score='${this.player1.score}' .active='${this.currentPlayer == this.player1}'></player-score-card>
+          <player-score-card id="player2" .playerName="${this.player2.name}" .score='${this.player2.score}' .active='${this.currentPlayer == this.player2}'></player-score-card>
         </div>
         <div class="cards-wrapper">
           ${this.playSet.map((symbol) => {

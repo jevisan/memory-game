@@ -1,8 +1,26 @@
 import { html, css, LitElement } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 export class PlayerScoreCard extends LitElement {
   static get styles() {
     return css`
+      .score-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 200px;
+        border-radius: 20px;
+        border: 5px solid white;
+        background-color: var(--bg-color-2);
+        color: var(--bg-color-3);
+      }
+      .score-container.active {
+        background-color: var(--secondary-color);
+        color: white;
+      }
+      span {
+        font-size: 2rem;
+      }
     `;
   }
 
@@ -13,6 +31,9 @@ export class PlayerScoreCard extends LitElement {
       },
       score: {
         type: Number
+      },
+      active: {
+        type: Boolean
       }
     }
   }
@@ -21,6 +42,16 @@ export class PlayerScoreCard extends LitElement {
     super();
     this.playerName = '';
     this.score = 0;
+    this.active;
+    this.activeClass = { active: this.active };
+  }
+
+  updated(_changedProperties) {
+    super.updated(_changedProperties);
+    console.log(_changedProperties, this);
+    if (_changedProperties.has('active')) {
+      this.activeClass = { active: !this.active };
+    }
   }
 
   getScore() {
@@ -31,10 +62,17 @@ export class PlayerScoreCard extends LitElement {
     this.score = score;
   }
 
+  toggleActive() {
+    console.log(this.active);
+    this.activeClass = { active: !this.active };
+  }
+
   render() {
     return html`
-      <h2>${this.playerName}</h2>
-      <span>${this.score}</span>
+      <div class="score-container ${classMap(this.activeClass)}">
+        <h2>${this.playerName}</h2>
+        <span>${this.score}</span>
+      </div>
     `;
   }
 }
