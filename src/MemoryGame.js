@@ -92,7 +92,6 @@ export class MemoryGame extends LitElement {
   }
 
   handdlePlay(e) {
-    // tomar las cartas
     if (this.revealedCard1 === null) {
       this.revealedCard1 = e.target;
       this.revealedCard1.setState('show');
@@ -102,8 +101,7 @@ export class MemoryGame extends LitElement {
       setTimeout(() => {
         if (this.revealedCard1.symbol === this.revealedCard2.symbol) {
           this.currentPlayer.score ++;
-          this.getCurrentPlayerCard().setScore(this.currentPlayer.score);
-          console.log(this.currentPlayer);
+          this.incrementScore();
           this.revealedCard1.setState('taken');
           this.revealedCard2.setState('taken');
         } else {
@@ -117,17 +115,28 @@ export class MemoryGame extends LitElement {
     }
   }
 
-  getCurrentPlayerCard() {
-    if (this.currentPlayer === this.player1) {
-      return this.shadowRoot.getElementById('player1');
-    } else {
-      return this.shadowRoot.getElementById('player2');
-    }
+  incrementScore() {
+    const incrementScoreEvent = new CustomEvent('increment-score');
+    this.getPlayerCard('active').dispatchEvent(incrementScoreEvent);
   }
 
-  toggleActivePlayer() {
-    this.shadowRoot.getElementById('player1').toogleActive();
-    this.shadowRoot.getElementById('player2').toogleActive();
+  getPlayerCard(player) {
+    switch (player) {
+      case 'active':
+        if (this.currentPlayer === this.player1) {
+          return this.shadowRoot.getElementById('player1');
+        } else {
+          return this.shadowRoot.getElementById('player2');
+        }
+      case 'inactive':
+        if (this.currentPlayer === this.player1) {
+          return this.shadowRoot.getElementById('player2');
+        } else {
+          return this.shadowRoot.getElementById('player1');
+        }
+      default:
+        return;
+    }
   }
 
   passTurn() {
@@ -136,14 +145,27 @@ export class MemoryGame extends LitElement {
     } else {
       this.currentPlayer = this.player1;
     }
+    const toogleActiveEvent = new CustomEvent('toogle-active');
+    this.getPlayerCard('active').dispatchEvent(toogleActiveEvent);
+    this.getPlayerCard('inactive').dispatchEvent(toogleActiveEvent);
   }
   
   render() {
     return html`
       <div id="board">
         <div id="score-board">
-          <player-score-card id="player1" .playerName="${this.player1.name}" .score='${this.player1.score}' .active='${this.currentPlayer == this.player1}'></player-score-card>
-          <player-score-card id="player2" .playerName="${this.player2.name}" .score='${this.player2.score}' .active='${this.currentPlayer == this.player2}'></player-score-card>
+          <player-score-card 
+            id="player1" 
+            .playerName="${this.player1.name}" 
+            .score='${this.player1.score}' 
+            .active='${this.currentPlayer === this.player1}'>
+          </player-score-card>
+          <player-score-card 
+            id="player2" 
+            .playerName="${this.player2.name}" 
+            .score='${this.player2.score}' 
+            .active='${this.currentPlayer === this.player2}'>
+          </player-score-card>
         </div>
         <div class="cards-wrapper">
           ${this.playSet.map((symbol) => {

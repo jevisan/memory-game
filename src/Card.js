@@ -83,12 +83,9 @@ export class Card extends LitElement {
       show: this.state === 'show',
       taken: this.state === 'taken'
     };
-    console.log(this.stateClass);
-    this.requestUpdate();
   }
 
   render() {
-    // console.log(this.stateClass);
     return html`
       <div @click="${this.__onClick}" class='game-card ${classMap(this.stateClass)}'>
         <div class="game-card-inner">

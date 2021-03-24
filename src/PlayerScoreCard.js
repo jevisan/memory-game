@@ -42,34 +42,28 @@ export class PlayerScoreCard extends LitElement {
     super();
     this.playerName = '';
     this.score = 0;
-    this.active;
+    this.active = '';
     this.activeClass = { active: this.active };
+
+    this.addEventListener('increment-score', (e) => {
+      this.score ++;
+    });
+    this.addEventListener('toogle-active', (e) => {
+      this.active = !this.active;
+    });
   }
 
   updated(_changedProperties) {
     super.updated(_changedProperties);
-    console.log(_changedProperties, this);
-    if (_changedProperties.has('active')) {
-      this.activeClass = { active: !this.active };
+    if (_changedProperties.has('active') && this.active != undefined) {
+      this.activeClass = { active: this.active };
+      this.requestUpdate();
     }
-  }
-
-  getScore() {
-    return this.score;
-  }
-  
-  setScore(score) {
-    this.score = score;
-  }
-
-  toggleActive() {
-    console.log(this.active);
-    this.activeClass = { active: !this.active };
   }
 
   render() {
     return html`
-      <div class="score-container ${classMap(this.activeClass)}">
+      <div class='score-container ${classMap(this.activeClass)}'>
         <h2>${this.playerName}</h2>
         <span>${this.score}</span>
       </div>
