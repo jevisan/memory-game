@@ -134,8 +134,6 @@ export class MemoryGame extends LitElement {
         } else {
           return this.shadowRoot.getElementById('player1');
         }
-      default:
-        return;
     }
   }
 
@@ -145,9 +143,9 @@ export class MemoryGame extends LitElement {
     } else {
       this.currentPlayer = this.player1;
     }
-    const toogleActiveEvent = new CustomEvent('toogle-active');
-    this.getPlayerCard('active').dispatchEvent(toogleActiveEvent);
-    this.getPlayerCard('inactive').dispatchEvent(toogleActiveEvent);
+    const toggleActiveEvent = new CustomEvent('toggle-active');
+    this.getPlayerCard('active').dispatchEvent(toggleActiveEvent);
+    this.getPlayerCard('inactive').dispatchEvent(toggleActiveEvent);
   }
   
   render() {

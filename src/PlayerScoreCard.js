@@ -48,7 +48,7 @@ export class PlayerScoreCard extends LitElement {
     this.addEventListener('increment-score', (e) => {
       this.score ++;
     });
-    this.addEventListener('toogle-active', (e) => {
+    this.addEventListener('toggle-active', (e) => {
       this.active = !this.active;
     });
   }
