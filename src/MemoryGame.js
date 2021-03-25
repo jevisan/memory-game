@@ -6,21 +6,21 @@ export class MemoryGame extends LitElement {
       :host {
         font-size: 16px;
         font-family: sans-serif;
-        --primary-color: #123C69;
-        --secondary-color: #AC3B61;
+        --primary-color: #123c69;
+        --secondary-color: #ac3b61;
         --bleu: #2880de;
-        --bg-color-1: #EDC7B7;
-        --bg-color-2: #EEE2DC;
-        --bg-color-3: #BAB2B5;
+        --bg-color-1: #edc7b7;
+        --bg-color-2: #eee2dc;
+        --bg-color-3: #bab2b5;
       }
       #board {
         background: var(--bg-color-1);
         border: 5px solid white;
         border-radius: 20px;
         padding: 40px 0;
-        box-shadow: 11px 13px 31px -4px rgba(114,86,86,0.6);
-        -webkit-box-shadow: 11px 13px 31px -4px rgba(114,86,86,0.6);
-        -moz-box-shadow: 11px 13px 31px -4px rgba(114,86,86,0.6);
+        box-shadow: 11px 13px 31px -4px rgba(114, 86, 86, 0.6);
+        -webkit-box-shadow: 11px 13px 31px -4px rgba(114, 86, 86, 0.6);
+        -moz-box-shadow: 11px 13px 31px -4px rgba(114, 86, 86, 0.6);
       }
       #score-board {
         display: flex;
@@ -41,66 +41,75 @@ export class MemoryGame extends LitElement {
   static get properties() {
     return {
       symbols: {
-        type: Array
+        type: Array,
       },
       playSet: {
-        type: Array
+        type: Array,
       },
       player1: {
-        type: Object
+        type: Object,
       },
       player2: {
-        type: Object
-      }
-    }
+        type: Object,
+      },
+    };
   }
 
   constructor() {
     super();
-    this.availableSymbols = ['🎁', '🎈', '🎠', '🏈', '🪁', '🎯', '🎮', '🎹', '🎸', '🍕', '🍔', '🚗', '🚁', '🚀', '🚢'];
-    this.playSet = this.__getPlaySet(15);
+    this.availableSymbols = [
+      '🎁',
+      '🎈',
+      '🎠',
+      '🏈',
+      '🪁',
+      '🎯',
+      '🎮',
+      '🎹',
+      '🎸',
+      '🍕',
+      '🍔',
+      '🚗',
+      '🚁',
+      '🚀',
+      '🚢',
+    ];
+    this.playSet = [];
     this.revealedCard1 = null;
     this.revealedCard2 = null;
-    this.player1 = this.setPlayer('Player 1', 0);
-    this.player2 = this.setPlayer('Player 2', 0);
+    this.player1 = { name: 'Player 1', score: 0 };
+    this.player2 = { name: 'Player 2', score: 0 };
     this.currentPlayer = this.player1;
-  }
 
-  setPlayer(name, score) {
-    return {
-      name: name,
-      score: score
-    }
+    this.__getPlaySet(15);
   }
 
   __getPlaySet(nPairs) {
-    const playSet = [];
-    for (let i = 0; i < nPairs; i++) {
+    for (let i = 0; i < nPairs; i += 1) {
       // adding to the playset twice
-      playSet.push(this.availableSymbols[i]);
-      playSet.push(this.availableSymbols[i]);
+      this.playSet.push(this.availableSymbols[i]);
+      this.playSet.push(this.availableSymbols[i]);
     }
-    return this.__shuffleArray(playSet);
+    return this.__shufflePlaySet();
   }
 
-  __shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
+  __shufflePlaySet() {
+    for (let i = this.playSet.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+      [this.playSet[i], this.playSet[j]] = [this.playSet[j], this.playSet[i]];
     }
-    return arr;
   }
 
   handdlePlay(e) {
     if (this.revealedCard1 === null) {
       this.revealedCard1 = e.target;
       this.revealedCard1.setState('show');
-    } else if (this.revealedCard2 === null && e.target != this.revealedCard1) {
+    } else if (this.revealedCard2 === null && e.target !== this.revealedCard1) {
       this.revealedCard2 = e.target;
       this.revealedCard2.setState('show');
       setTimeout(() => {
         if (this.revealedCard1.symbol === this.revealedCard2.symbol) {
-          this.currentPlayer.score ++;
+          this.currentPlayer.score += 1;
           this.incrementScore();
           this.revealedCard1.setState('taken');
           this.revealedCard2.setState('taken');
@@ -121,20 +130,27 @@ export class MemoryGame extends LitElement {
   }
 
   getPlayerCard(player) {
+    let playerCard;
     switch (player) {
       case 'active':
+      default:
         if (this.currentPlayer === this.player1) {
-          return this.shadowRoot.getElementById('player1');
+          playerCard = this.shadowRoot.getElementById('player1');
+          break;
         } else {
-          return this.shadowRoot.getElementById('player2');
+          playerCard = this.shadowRoot.getElementById('player2');
+          break;
         }
       case 'inactive':
         if (this.currentPlayer === this.player1) {
-          return this.shadowRoot.getElementById('player2');
+          playerCard = this.shadowRoot.getElementById('player2');
+          break;
         } else {
-          return this.shadowRoot.getElementById('player1');
+          playerCard = this.shadowRoot.getElementById('player1');
+          break;
         }
     }
+    return playerCard;
   }
 
   passTurn() {
@@ -147,34 +163,36 @@ export class MemoryGame extends LitElement {
     this.getPlayerCard('active').dispatchEvent(toggleActiveEvent);
     this.getPlayerCard('inactive').dispatchEvent(toggleActiveEvent);
   }
-  
+
   render() {
     return html`
       <div id="board">
         <div id="score-board">
-          <player-score-card 
-            id="player1" 
-            .playerName="${this.player1.name}" 
-            .score='${this.player1.score}' 
-            .active='${this.currentPlayer === this.player1}'>
+          <player-score-card
+            id="player1"
+            .playerName="${this.player1.name}"
+            .score="${this.player1.score}"
+            .active="${this.currentPlayer === this.player1}"
+          >
           </player-score-card>
-          <player-score-card 
-            id="player2" 
-            .playerName="${this.player2.name}" 
-            .score='${this.player2.score}' 
-            .active='${this.currentPlayer === this.player2}'>
+          <player-score-card
+            id="player2"
+            .playerName="${this.player2.name}"
+            .score="${this.player2.score}"
+            .active="${this.currentPlayer === this.player2}"
+          >
           </player-score-card>
         </div>
         <div class="cards-wrapper">
-          ${this.playSet.map((symbol) => {
-            return html`
-              <card-memory 
-                .symbol="${symbol}" 
-                @card-selected='${this.handdlePlay}' 
-                .state="${'hidden'}">
+          ${this.playSet.map(
+            symbol => html`
+              <card-memory
+                .symbol="${symbol}"
+                @card-selected="${this.handdlePlay}"
+              >
               </card-memory>
-            `;
-          })}
+            `
+          )}
         </div>
       </div>
     `;

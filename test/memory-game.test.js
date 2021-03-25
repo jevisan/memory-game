@@ -1,4 +1,4 @@
-import { html, fixture, expect, waitUntil, oneEvent } from '@open-wc/testing';
+import { html, fixture, expect, oneEvent } from '@open-wc/testing';
 
 import '../memory-game.js';
 
@@ -12,7 +12,7 @@ describe('MemoryGame', () => {
     expect(el.currentPlayer).to.equal(el.player1);
     expect(el.playSet.length).to.equal(30);
   });
-  
+
   it('handdling a turn without a pair', async () => {
     const el = await fixture(html`<memory-game></memory-game>`);
     const board = el.shadowRoot.getElementById('board');
@@ -24,21 +24,21 @@ describe('MemoryGame', () => {
     let i = 0;
     while (card.symbol === card2.symbol) {
       card2 = cards[i + 1];
-      i ++;
+      i += 1;
     }
 
     const currentPlayerCard = el.getPlayerCard('active');
     el.handdlePlay({
-      target: card
+      target: card,
     });
     expect(el.revealedCard1).to.equal(card);
     el.handdlePlay({
-      target: card2
+      target: card2,
     });
     await oneEvent(currentPlayerCard, 'toggle-active');
     expect(el.currentPlayer).to.equal(el.player2);
   }).timeout(3000);
-  
+
   it('handdling a turn with a pair', async () => {
     const el = await fixture(html`<memory-game></memory-game>`);
     const board = el.shadowRoot.getElementById('board');
@@ -48,18 +48,18 @@ describe('MemoryGame', () => {
     const card = cards[0];
     let card2 = cards[1];
     let i = 0;
-    while (card.symbol != card2.symbol) {
+    while (card.symbol !== card2.symbol) {
       card2 = cards[i + 1];
-      i ++;
+      i += 1;
     }
 
     const currentPlayerCard = el.getPlayerCard('active');
     el.handdlePlay({
-      target: card
+      target: card,
     });
     expect(el.revealedCard1).to.equal(card);
     el.handdlePlay({
-      target: card2
+      target: card2,
     });
     await oneEvent(currentPlayerCard, 'increment-score');
   }).timeout(3000);
@@ -82,5 +82,12 @@ describe('MemoryGame', () => {
     const prom = oneEvent(card, 'card-selected');
     card.__onClick();
     await prom;
+  });
+
+  it('player card default return value', async () => {
+    const el = await fixture(html`<memory-game></memory-game>`);
+    const defaultValue = el.getPlayerCard();
+    const playerCard = el.shadowRoot.getElementById('player1');
+    expect(defaultValue).to.equal(playerCard);
   });
 });

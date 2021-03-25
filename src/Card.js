@@ -1,8 +1,7 @@
-import { html, css, LitElement } from "lit-element";
+import { html, css, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map';
 
 export class Card extends LitElement {
-
   static get styles() {
     return css`
       .game-card {
@@ -21,7 +20,8 @@ export class Card extends LitElement {
       .game-card.show .game-card-inner {
         transform: rotateY(180deg);
       }
-      .game-card-front, .game-card-back {
+      .game-card-front,
+      .game-card-back {
         position: absolute;
         width: 90%;
         height: 90%;
@@ -52,26 +52,26 @@ export class Card extends LitElement {
   static get properties() {
     return {
       symbol: {
-        type: String
+        type: String,
       },
       state: {
-        type: String
-      }
-    }
+        type: String,
+      },
+    };
   }
-  
+
   constructor() {
     super();
     this.symbol = '';
     this.state = 'hidden';
     this.stateClass = { hide: true };
   }
-  
+
   __onClick() {
     const playEvent = new CustomEvent('card-selected', {
       detail: {
-        choice: this.symbol
-      }
+        choice: this.symbol,
+      },
     });
     this.dispatchEvent(playEvent);
   }
@@ -81,18 +81,20 @@ export class Card extends LitElement {
     this.stateClass = {
       hide: this.state === 'hidden',
       show: this.state === 'show',
-      taken: this.state === 'taken'
+      taken: this.state === 'taken',
     };
   }
 
   render() {
     return html`
-      <div @click="${this.__onClick}" class='game-card ${classMap(this.stateClass)}'>
+      <div
+        @click="${this.__onClick}"
+        @keydown="${this.__onClick}"
+        class="game-card ${classMap(this.stateClass)}"
+      >
         <div class="game-card-inner">
           <div class="game-card-front"></div>
-          <div class="game-card-back">
-            ${this.symbol} 
-          </div>
+          <div class="game-card-back">${this.symbol}</div>
         </div>
       </div>
     `;

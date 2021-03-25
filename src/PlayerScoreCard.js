@@ -1,5 +1,5 @@
-import { html, css, LitElement } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { html, css, LitElement } from 'lit-element';
+import { classMap } from 'lit-html/directives/class-map';
 
 export class PlayerScoreCard extends LitElement {
   static get styles() {
@@ -30,12 +30,12 @@ export class PlayerScoreCard extends LitElement {
         type: String,
       },
       score: {
-        type: Number
+        type: Number,
       },
       active: {
-        type: Boolean
-      }
-    }
+        type: Boolean,
+      },
+    };
   }
 
   constructor() {
@@ -45,17 +45,17 @@ export class PlayerScoreCard extends LitElement {
     this.active = '';
     this.activeClass = { active: this.active };
 
-    this.addEventListener('increment-score', (e) => {
-      this.score ++;
+    this.addEventListener('increment-score', () => {
+      this.score += 1;
     });
-    this.addEventListener('toggle-active', (e) => {
+    this.addEventListener('toggle-active', () => {
       this.active = !this.active;
     });
   }
 
   updated(_changedProperties) {
     super.updated(_changedProperties);
-    if (_changedProperties.has('active') && this.active != undefined) {
+    if (_changedProperties.has('active') && this.active !== undefined) {
       this.activeClass = { active: this.active };
       this.requestUpdate();
     }
@@ -63,7 +63,7 @@ export class PlayerScoreCard extends LitElement {
 
   render() {
     return html`
-      <div class='score-container ${classMap(this.activeClass)}'>
+      <div class="score-container ${classMap(this.activeClass)}">
         <h2>${this.playerName}</h2>
         <span>${this.score}</span>
       </div>
